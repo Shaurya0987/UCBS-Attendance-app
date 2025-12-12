@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:ucbs_attendance_app/apis/apikeys.dart';
-import 'package:ucbs_attendance_app/views/login.dart';
+import 'package:ucbs_attendance_app/views/login/login.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
