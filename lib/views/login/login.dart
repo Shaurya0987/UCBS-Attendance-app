@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ucbs_attendance_app/colors/colors.dart';
 import 'package:ucbs_attendance_app/views/login/role_selection.dart';
-import 'package:ucbs_attendance_app/views/login/signin.dart';
+import 'package:ucbs_attendance_app/views/login/user_info.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -17,11 +17,12 @@ class _LoginState extends State<Login> {
     return Scaffold(
       backgroundColor: AppColors.bgDark,
       body: PageView(
+        // physics: NeverScrollableScrollPhysics(),
         controller: controller,
         scrollDirection: Axis.vertical,
         children: [
           RoleSelection(controller: controller),
-          Signin(),
+          UserInfo(),
         ],
       ),
     );

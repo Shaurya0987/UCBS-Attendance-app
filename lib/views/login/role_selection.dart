@@ -1,8 +1,12 @@
+// ignore_for_file: deprecated_member_use
+
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'package:ucbs_attendance_app/colors/colors.dart';
+import 'package:ucbs_attendance_app/provider/user_session.dart';
 
 class RoleSelection extends StatefulWidget {
   final PageController controller;
@@ -13,6 +17,17 @@ class RoleSelection extends StatefulWidget {
 }
 
 class _RoleSelectionState extends State<RoleSelection> {
+  double opacity = 0.0;
+  @override
+  void initState() {
+    Future.delayed(Duration(milliseconds: 1000), () {
+      setState(() {
+        opacity = 1.0;
+      });
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -64,77 +79,84 @@ class _RoleSelectionState extends State<RoleSelection> {
             top: 140,
             left: 20,
             right: 20,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(25),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-                child: Container(
-                  height: 600,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.10),
-                    borderRadius: BorderRadius.circular(25),
-                    border: Border.all(
-                      color: Colors.white.withOpacity(0.2),
-                      width: 1,
+            child: AnimatedOpacity(
+              opacity: opacity,
+
+              duration: Duration(milliseconds: 1000),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(25),
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+                  child: Container(
+                    height: 600,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.10),
+                      borderRadius: BorderRadius.circular(25),
+                      border: Border.all(
+                        color: Colors.white.withOpacity(0.2),
+                        width: 1,
+                      ),
                     ),
-                  ),
-                  child: Column(
-                    children: [
-                      SizedBox(height: 30),
-                      Text(
-                        'Welcome To FaceMark',
-                        style: GoogleFonts.dmSans(
-                          color: AppColors.textPrimary,
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
+                    child: Column(
+                      children: [
+                        SizedBox(height: 30),
+                        Text(
+                          'Welcome To FaceMark',
+                          style: GoogleFonts.dmSans(
+                            color: AppColors.textPrimary,
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                      SizedBox(height: 10),
-                      Text(
-                        'Ai attendance system for UCBS',
-                        style: GoogleFonts.dmSans(
-                          color: AppColors.textSecondary,
-                          fontSize: 15,
+                        SizedBox(height: 10),
+                        Text(
+                          'Ai attendance system for UCBS',
+                          style: GoogleFonts.dmSans(
+                            color: AppColors.textSecondary,
+                            fontSize: 15,
+                          ),
                         ),
-                      ),
-                      SizedBox(height: 50),
-                      Text(
-                        'Select your Role',
-                        style: GoogleFonts.dmSans(
-                          color: AppColors.textPrimary,
-                          fontSize: 18,
+                        SizedBox(height: 50),
+                        Text(
+                          'Select your Role',
+                          style: GoogleFonts.dmSans(
+                            color: AppColors.textPrimary,
+                            fontSize: 18,
+                          ),
                         ),
-                      ),
-                      SizedBox(height: 50),
-                      ChoiceContainer(
-                        roll: 'Teacher',
-                        description: 'Manage attendance \nreports',
-                        color: AppColors.accentBlue,
-                        ontap: () {
-                          widget.controller.animateToPage(
-                            1,
-                            duration: Duration(milliseconds: 350),
-                            curve: Curves.easeIn,
-                          );
-                        },
-                        icon: Icons.account_box,
-                      ),
-                      SizedBox(height: 20),
-                      ChoiceContainer(
-                        roll: 'Student',
-                        description: 'Mark attendance \nview progress',
-                        color: AppColors.accentPurple,
-                        ontap: () {
-                          widget.controller.animateToPage(
-                            1,
-                            duration: Duration(milliseconds: 350),
-                            curve: Curves.easeIn,
-                          );
-                        },
-                        icon: Icons.keyboard_command_key_outlined,
-                      ),
-                    ],
+                        SizedBox(height: 50),
+                        ChoiceContainer(
+                          roll: 'Teacher',
+                          description: 'Manage attendance \nreports',
+                          color: AppColors.error,
+                          ontap: () {
+                            context.read<UserSession>().setrole("Teacher");
+                            widget.controller.animateToPage(
+                              1,
+                              duration: Duration(milliseconds: 350),
+                              curve: Curves.easeIn,
+                            );
+                          },
+                          icon: Icons.account_box,
+                        ),
+                        SizedBox(height: 20),
+                        ChoiceContainer(
+                          roll: 'Student',
+                          description: 'Mark attendance \nview progress',
+                          color: AppColors.accentPurple,
+                          ontap: () {
+                            context.read<UserSession>().setrole("Student");
+                            widget.controller.animateToPage(
+                              1,
+                              duration: Duration(milliseconds: 350),
+                              curve: Curves.easeIn,
+                            );
+                          },
+                          icon: Icons.keyboard_command_key_outlined,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -170,16 +192,16 @@ class _ChoiceContainerState extends State<ChoiceContainer> {
   double _scale = 1.0;
   void _onTapDown(TapDownDetails details) {
     setState(() {
-      _scale = 0.95; 
+      _scale = 0.95;
     });
   }
 
   void _onTapUp(TapUpDetails details) {
     setState(() {
-      _scale = 1.0; 
+      _scale = 1.0;
     });
 
-    widget.ontap(); 
+    widget.ontap();
   }
 
   void _onTapCancel() {
@@ -194,9 +216,9 @@ class _ChoiceContainerState extends State<ChoiceContainer> {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: GestureDetector(
         onTap: widget.ontap,
-        onTapDown: _onTapDown, // when finger touches
-        onTapUp: _onTapUp, // when finger lifts
-        onTapCancel: _onTapCancel, // if tap cancelled
+        onTapDown: _onTapDown,
+        onTapUp: _onTapUp,
+        onTapCancel: _onTapCancel,
 
         child: AnimatedScale(
           scale: _scale,
