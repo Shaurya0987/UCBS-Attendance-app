@@ -3,6 +3,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ucbs_attendance_app/colors/colors.dart';
@@ -129,8 +130,14 @@ class FrostedLogicCard extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 50),
-                CustomTextFields(),
-                CustomTextFields(),
+                CustomTextFields(
+                  textfieldhint: 'Enter Your Name',
+                  inputType: TextInputType.text,
+                ),
+                CustomTextFields(
+                  textfieldhint: 'Enter Your RollNo.',
+                  inputType: TextInputType.number,
+                ),
               ],
             ),
           ),
@@ -140,9 +147,25 @@ class FrostedLogicCard extends StatelessWidget {
   }
 }
 
-class CustomTextFields extends StatelessWidget {
-  const CustomTextFields({super.key});
+class CustomTextFields extends StatefulWidget {
+  final String textfieldhint;
+  final TextInputType inputType;
+  // final String rollno;
+  // final String sem;
+  const CustomTextFields({
+    super.key,
 
+    // required this.rollno,
+    // required this.sem,
+    required this.textfieldhint,
+    required this.inputType,
+  });
+
+  @override
+  State<CustomTextFields> createState() => _CustomTextFieldsState();
+}
+
+class _CustomTextFieldsState extends State<CustomTextFields> {
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -159,10 +182,16 @@ class CustomTextFields extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: TextField(
               style: TextStyle(color: AppColors.textSecondary),
+              keyboardType: widget.inputType,
+              inputFormatters: [
+                if (widget.inputType == TextInputType.number)
+                  FilteringTextInputFormatter.digitsOnly,
+                LengthLimitingTextInputFormatter(30),
+              ],
               decoration: InputDecoration(
                 border: InputBorder.none,
                 hint: Text(
-                  'Enter Name',
+                  widget.textfieldhint,
                   style: TextStyle(color: AppColors.textFaded),
                 ),
               ),
