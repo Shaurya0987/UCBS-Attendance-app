@@ -11,12 +11,16 @@ class UserSession extends ChangeNotifier {
   }
 
   void setrollno(String value) {
-    role = value;
+    rollNo = value;
     notifyListeners();
   }
 
   void setName(String value) {
     name = value;
+  }
+
+  void setSem(String value) {
+    sem = value;
   }
 
   void clear() {

@@ -3,7 +3,10 @@ import 'package:action_slider/action_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'package:ucbs_attendance_app/colors/colors.dart';
+import 'package:ucbs_attendance_app/provider/user_session.dart';
+import 'package:ucbs_attendance_app/views/login/scan_screen.dart';
 
 class StudentLogin extends StatefulWidget {
   const StudentLogin({super.key});
@@ -213,12 +216,21 @@ class _FrostedStudentCardState extends State<FrostedStudentCard> {
                         return;
                       }
 
-                      // ✅ SUCCESS
                       controller.success();
+                      context.read<UserSession>().setName(
+                        widget.nameController.text,
+                      );
+                      context.read<UserSession>().setrollno(
+                        widget.rollNoController.text,
+                      );
+                      context.read<UserSession>().setSem(selectedSem!);
 
                       await Future.delayed(const Duration(milliseconds: 400));
 
-                      // TODO: navigate to face scan screen
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => ScanScreen()),
+                      );
                     },
                   ),
                 ],
