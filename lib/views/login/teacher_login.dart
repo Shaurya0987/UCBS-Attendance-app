@@ -1,10 +1,9 @@
 // ignore_for_file: deprecated_member_use
 
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ucbs_attendance_app/colors/colors.dart';
 
@@ -17,14 +16,13 @@ class TeacherLogin extends StatefulWidget {
 
 class _TeacherLoginState extends State<TeacherLogin> {
   double opacity = 0.0;
+
   @override
   void initState() {
-    Future.delayed(Duration(milliseconds: 500), () {
-      setState(() {
-        opacity = 1.0;
-      });
-    });
     super.initState();
+    Future.delayed(const Duration(milliseconds: 500), () {
+      setState(() => opacity = 1.0);
+    });
   }
 
   @override
@@ -34,48 +32,13 @@ class _TeacherLoginState extends State<TeacherLogin> {
       body: SizedBox.expand(
         child: Stack(
           children: [
-            Positioned(
-              top: -10,
-              right: -10,
-              child: SvgPicture.asset(
-                'assets/images/Shape 1.svg',
-                width: 120,
-                height: 120,
-                color: Colors.deepOrange.withOpacity(0.7),
-              ),
+            Positioned.fill(
+              child: Image.asset("assets/images/bg.jpeg", fit: BoxFit.cover),
             ),
-            Positioned(
-              top: 650,
-              right: -20,
-              child: SvgPicture.asset(
-                'assets/images/Shape 5.svg',
-                width: 120,
-                height: 120,
-                color: Colors.deepOrange.withOpacity(0.7),
-              ),
-            ),
-            Positioned(
-              top: 80,
-              left: -15,
-              child: SvgPicture.asset(
-                'assets/images/Shape 15.svg',
-                width: 130,
-                height: 130,
-                color: Colors.deepOrange.withOpacity(0.7),
-              ),
-            ),
-            Positioned(
-              top: 450,
-              left: -20,
-              child: SvgPicture.asset(
-                'assets/images/Shape 2.svg',
-                width: 130,
-                height: 130,
-                color: Colors.deepOrange.withOpacity(0.7),
-              ),
-            ),
+
+            /// Center Card
             Align(
-              alignment: AlignmentGeometry.center,
+              alignment: Alignment.center,
               child: FrostedLogicCard(opacity: opacity),
             ),
           ],
@@ -86,22 +49,27 @@ class _TeacherLoginState extends State<TeacherLogin> {
 }
 
 class FrostedLogicCard extends StatelessWidget {
-  const FrostedLogicCard({super.key, required this.opacity});
-
   final double opacity;
+
+  const FrostedLogicCard({super.key, required this.opacity});
 
   @override
   Widget build(BuildContext context) {
+    bool keyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
+
     return AnimatedOpacity(
       opacity: opacity,
-
-      duration: Duration(milliseconds: 1000),
-      child: ClipRect(
+      duration: const Duration(milliseconds: 800),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(25),
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
+          filter: keyboardOpen
+              ? ImageFilter.blur(sigmaX: 0, sigmaY: 0)
+              : ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+
           child: Container(
-            height: 700,
-            width: double.infinity,
+            width: MediaQuery.of(context).size.width * 0.88,
+            padding: const EdgeInsets.all(25),
             decoration: BoxDecoration(
               color: Colors.white.withOpacity(0.10),
               borderRadius: BorderRadius.circular(25),
@@ -110,35 +78,48 @@ class FrostedLogicCard extends StatelessWidget {
                 width: 1,
               ),
             ),
-            child: Column(
-              children: [
-                SizedBox(height: 30),
-                Text(
-                  'Enter Your Details',
-                  style: GoogleFonts.dmSans(
-                    color: AppColors.textPrimary,
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
+
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const SizedBox(height: 10),
+                  Text(
+                    'Enter Your Details',
+                    style: GoogleFonts.dmSans(
+                      color: AppColors.textPrimary,
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                SizedBox(height: 10),
-                Text(
-                  'Data will be pushed to Supabase \nwhen ai detects you as a human',
-                  style: GoogleFonts.dmSans(
-                    color: AppColors.textSecondary,
-                    fontSize: 15,
+
+                  const SizedBox(height: 10),
+                  Text(
+                    'Data will be pushed to Supabase\nwhen AI detects you as a human',
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.dmSans(
+                      color: AppColors.textSecondary,
+                      fontSize: 15,
+                    ),
                   ),
-                ),
-                SizedBox(height: 50),
-                CustomTextFields(
-                  textfieldhint: 'Enter Your Name',
-                  inputType: TextInputType.text,
-                ),
-                CustomTextFields(
-                  textfieldhint: 'Enter Your RollNo.',
-                  inputType: TextInputType.number,
-                ),
-              ],
+
+                  const SizedBox(height: 40),
+
+                  /// Name
+                  CustomTextFields(
+                    textfieldhint: 'Enter Your Name',
+                    inputType: TextInputType.text,
+                  ),
+
+                  /// Roll Number
+                  CustomTextFields(
+                    textfieldhint: 'Enter Your Roll No.',
+                    inputType: TextInputType.number,
+                  ),
+
+                  const SizedBox(height: 30),
+                ],
+              ),
             ),
           ),
         ),
@@ -147,54 +128,44 @@ class FrostedLogicCard extends StatelessWidget {
   }
 }
 
-class CustomTextFields extends StatefulWidget {
+class CustomTextFields extends StatelessWidget {
   final String textfieldhint;
   final TextInputType inputType;
-  // final String rollno;
-  // final String sem;
+
   const CustomTextFields({
     super.key,
-
-    // required this.rollno,
-    // required this.sem,
     required this.textfieldhint,
     required this.inputType,
   });
 
   @override
-  State<CustomTextFields> createState() => _CustomTextFieldsState();
-}
-
-class _CustomTextFieldsState extends State<CustomTextFields> {
-  @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-      child: Container(
-        height: 80,
-        width: double.infinity,
-        decoration: BoxDecoration(
-          color: Colors.grey.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: TextField(
-              style: TextStyle(color: AppColors.textSecondary),
-              keyboardType: widget.inputType,
-              inputFormatters: [
-                if (widget.inputType == TextInputType.number)
-                  FilteringTextInputFormatter.digitsOnly,
-                LengthLimitingTextInputFormatter(30),
-              ],
-              decoration: InputDecoration(
-                border: InputBorder.none,
-                hint: Text(
-                  widget.textfieldhint,
-                  style: TextStyle(color: AppColors.textFaded),
-                ),
-              ),
+    return Container(
+      height: 75,
+      margin: const EdgeInsets.symmetric(vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.grey.withOpacity(0.12),
+        borderRadius: BorderRadius.circular(20),
+      ),
+
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 15),
+          child: TextField(
+            keyboardType: inputType,
+            style: const TextStyle(color: Colors.white),
+
+            inputFormatters: [
+              if (inputType == TextInputType.number)
+                FilteringTextInputFormatter.digitsOnly,
+
+              LengthLimitingTextInputFormatter(30),
+            ],
+
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              hintText: textfieldhint,
+              hintStyle: TextStyle(color: AppColors.textFaded),
             ),
           ),
         ),
