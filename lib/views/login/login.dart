@@ -17,7 +17,7 @@ class _LoginState extends State<Login> {
     return Scaffold(
       backgroundColor: AppColors.bgDark,
       body: PageView(
-        // physics: NeverScrollableScrollPhysics(),
+        physics: NeverScrollableScrollPhysics(),
         controller: controller,
         scrollDirection: Axis.vertical,
         children: [

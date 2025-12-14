@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:action_slider/action_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -57,7 +58,7 @@ class _StudentLoginState extends State<StudentLogin> {
   }
 }
 
-class FrostedStudentCard extends StatelessWidget {
+class FrostedStudentCard extends StatefulWidget {
   final double opacity;
   final TextEditingController nameController;
   final TextEditingController rollNoController;
@@ -70,11 +71,18 @@ class FrostedStudentCard extends StatelessWidget {
   });
 
   @override
+  State<FrostedStudentCard> createState() => _FrostedStudentCardState();
+}
+
+class _FrostedStudentCardState extends State<FrostedStudentCard> {
+  String? selectedSem;
+
+  @override
   Widget build(BuildContext context) {
     bool keyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
 
     return AnimatedOpacity(
-      opacity: opacity,
+      opacity: widget.opacity,
       duration: const Duration(milliseconds: 800),
 
       child: ClipRRect(
@@ -128,21 +136,91 @@ class FrostedStudentCard extends StatelessWidget {
                   CustomTextFields(
                     textfieldhint: 'Enter Your Name',
                     inputType: TextInputType.text,
-                    controller: nameController,
+                    controller: widget.nameController,
                   ),
 
                   CustomTextFields(
                     textfieldhint: 'Enter Roll Number',
                     inputType: TextInputType.number,
-                    controller: rollNoController,
+                    controller: widget.rollNoController,
                   ),
 
                   StudentDropdown(
                     label: "Choose your Sem",
                     options: ["1", "2", "3", "4", "5", "6"],
+                    onChanged: (value) {
+                      setState(() {
+                        selectedSem = value;
+                      });
+                    },
                   ),
 
                   const SizedBox(height: 30),
+                  ActionSlider.standard(
+                    height: 60,
+                    sliderBehavior: SliderBehavior.stretch,
+                    toggleColor: Colors.deepOrange.withOpacity(0.7),
+                    backgroundColor: Colors.white.withOpacity(0.12),
+                    foregroundBorderRadius: BorderRadius.circular(18),
+                    backgroundBorderRadius: BorderRadius.circular(18),
+                    icon: const Icon(
+                      Icons.arrow_forward_rounded,
+                      color: Colors.white,
+                      size: 28,
+                    ),
+                    child: Text(
+                      "Slide to begin",
+                      style: GoogleFonts.dmSans(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white.withOpacity(0.85),
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                    action: (controller) async {
+                      controller.loading();
+
+                      await Future.delayed(const Duration(milliseconds: 600));
+
+                      if (widget.nameController.text.trim().isEmpty ||
+                          widget.rollNoController.text.trim().isEmpty ||
+                          selectedSem == null) {
+                        controller.reset(); // slide back
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              "Please fill all details",
+                              style: GoogleFonts.dmSans(),
+                            ),
+                            backgroundColor: Colors.redAccent,
+                            behavior: SnackBarBehavior.floating,
+                          ),
+                        );
+
+                        return;
+                      }
+
+                      if (widget.rollNoController.text.length < 5) {
+                        controller.reset();
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Invalid roll number"),
+                            backgroundColor: Colors.redAccent,
+                          ),
+                        );
+                        return;
+                      }
+
+                      // ✅ SUCCESS
+                      controller.success();
+
+                      await Future.delayed(const Duration(milliseconds: 400));
+
+                      // TODO: navigate to face scan screen
+                    },
+                  ),
                 ],
               ),
             ),
@@ -205,13 +283,13 @@ class CustomTextFields extends StatelessWidget {
 class StudentDropdown extends StatefulWidget {
   final String label;
   final List<String> options;
-  // final Function(String) onChanged;
+  final Function(String) onChanged;
 
   const StudentDropdown({
     super.key,
     required this.label,
     required this.options,
-    // required this.onChanged,
+    required this.onChanged,
   });
 
   @override
@@ -244,7 +322,8 @@ class _StudentDropdownState extends State<StudentDropdown> {
           }).toList(),
           onChanged: (value) {
             setState(() => selectedOption = value);
-            // widget.onChanged(value!);
+
+            widget.onChanged(value!);
           },
         ),
       ),
